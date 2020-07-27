@@ -94,8 +94,3 @@ Tile::Tile(unsigned char posX, unsigned char posY)
     vertices.push_back(0.0f);                       // Bottom-left U
     vertices.push_back(0.0f);                       // Bottom-left V
 }
-
-Tile::~Tile()
-{
-    //dtor
-}

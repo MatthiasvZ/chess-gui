@@ -176,13 +176,29 @@ void Window::updateTitle()
         glfwSetWindowTitle(window, ("Schach (Schwarz am Zuge), FPS =" + std::to_string(prev_fps)).c_str());
 }
 
-void Window::setGameOver(bool winner)
+void Window::setGameOver(int outcome)
 {
     gameOver = true;
-    if (winner)
+    switch (outcome)
+    {
+    case 0:
         glfwSetWindowTitle(window, "Schachmatt, Schwarz hat gewonnen!");
-    else
+        break;
+    case 1:
         glfwSetWindowTitle(window, "Schachmatt, Weiß hat gewonnen!");
+        break;
+    case 2:
+        glfwSetWindowTitle(window, "Remis, mangels Material ist kein Matt mehr möglich!");
+        break;
+    case 3:
+        glfwSetWindowTitle(window, "Remis, Weiß ist patt!");
+        break;
+    case 4:
+        glfwSetWindowTitle(window, "Remis, Schwarz ist patt!");
+        break;
+    default:
+        break;
+    }
 }
 Window::~Window()
 {

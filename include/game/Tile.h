@@ -18,7 +18,6 @@ class Tile
 {
     public:
         Tile(unsigned char posX, unsigned char posY);
-        virtual ~Tile();
 
         inline std::vector<float> getVertices() const { return vertices; }
         inline Piece getPiece() const { return piece; }

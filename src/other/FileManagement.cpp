@@ -20,6 +20,6 @@ std::string FileManagement::getDir()
     char result[ PATH_MAX ];
     ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
     std::string sresult( result, (count > 0) ? count : 0 );
-    sresult.erase(sresult.end()-19, sresult.end());
+    sresult.erase(sresult.end()-9, sresult.end());
     return sresult;
 }

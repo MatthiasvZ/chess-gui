@@ -20,7 +20,7 @@ class Window
         {
             playerToMove = player;
         }
-        void setGameOver(bool winner);
+        void setGameOver(int outcome);
         ~Window();
 
     protected:
