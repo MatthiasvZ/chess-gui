@@ -12,6 +12,10 @@
 #include <vector>
 
 #define PLAY_AS 0 // 1 = white, 0 = black
+#define PLAY_AGAINST_AI true
+#define AI_VS_AI false
+#define MAX_DEPTH 3 // must be odd?
+
 namespace
 {
 Window window;
@@ -26,10 +30,13 @@ struct Move
     int pos2Y;
 };
 
-bool whiteCanCastleKs {true};
-bool whiteCanCastleQs {true};
-bool blackCanCastleKs {true};
-bool blackCanCastleQs {true};
+struct CastlingRights
+{
+    bool whiteCanCastleKs {true};
+    bool whiteCanCastleQs {true};
+    bool blackCanCastleKs {true};
+    bool blackCanCastleQs {true};
+};
 
 inline bool isTeammate(Piece ownPiece, Piece pieceInQ)
 {
@@ -39,7 +46,7 @@ inline bool isTeammate(Piece ownPiece, Piece pieceInQ)
         return true;
     return false;
 }
-bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMove)
+bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMove, const CastlingRights& CRs)
 {
     bool pathIsClear;
     Piece pieceToMove {tiles.at(move.pos1X - 1).at(move.pos1Y - 1).getPiece()};
@@ -214,12 +221,12 @@ bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMov
     case Piece::king_w:
         if (!whoToMove)
             return false;
-        if (move.pos2X == 3 && move.pos2Y == 1 && whiteCanCastleQs && tiles.at(1).at(0).getPiece() == Piece::none &&
+        if (move.pos2X == 3 && move.pos2Y == 1 && CRs.whiteCanCastleQs && tiles.at(1).at(0).getPiece() == Piece::none &&
             tiles.at(2).at(0).getPiece() == Piece::none &&
             tiles.at(3).at(0).getPiece() == Piece::none &&
             tiles.at(0).at(0).getPiece() == Piece::rook_w)
             return true;
-        if (move.pos2X == 7 && move.pos2Y == 1 && whiteCanCastleKs && tiles.at(5).at(0).getPiece() == Piece::none &&
+        if (move.pos2X == 7 && move.pos2Y == 1 && CRs.whiteCanCastleKs && tiles.at(5).at(0).getPiece() == Piece::none &&
             tiles.at(6).at(0).getPiece() == Piece::none &&
             tiles.at(7).at(0).getPiece() == Piece::rook_w)
             return true;
@@ -236,13 +243,13 @@ bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMov
             (move.pos2Y == move.pos1Y + 1 && move.pos2X == move.pos1X) ||
             (move.pos2Y == move.pos1Y - 1 && move.pos2X == move.pos1X))
             return true;
-        if (pieceToMove == king_b && move.pos2X == 3 && move.pos2Y == 8 && blackCanCastleQs &&
+        if (pieceToMove == king_b && move.pos2X == 3 && move.pos2Y == 8 && CRs.blackCanCastleQs &&
             tiles.at(1).at(7).getPiece() == Piece::none &&
             tiles.at(2).at(7).getPiece() == Piece::none &&
             tiles.at(3).at(7).getPiece() == Piece::none &&
             tiles.at(0).at(7).getPiece() == Piece::rook_b)
             return true;
-        if (pieceToMove == king_b && move.pos2X == 7 && move.pos2Y == 8 && blackCanCastleKs &&
+        if (pieceToMove == king_b && move.pos2X == 7 && move.pos2Y == 8 && CRs.blackCanCastleKs &&
             tiles.at(5).at(7).getPiece() == Piece::none &&
             tiles.at(6).at(7).getPiece() == Piece::none &&
             tiles.at(7).at(7).getPiece() == Piece::rook_b)
@@ -255,7 +262,7 @@ bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMov
     return false;
 }
 
-std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile>> tiles)
+std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile>> tiles, const CastlingRights& CRs)
 {
     std::vector<Move> availableMoves;
     if (whoToMove == 1)
@@ -274,7 +281,7 @@ std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile
                         for (int jy {0}; jy < 8; jy++)
                         {
 
-                            if (moveIsLegal(Move(ix + 1, iy + 1, jx + 1, jy + 1), tiles, whoToMove))
+                            if (moveIsLegal(Move(ix + 1, iy + 1, jx + 1, jy + 1), tiles, whoToMove, CRs))
                                 availableMoves.push_back(Move(ix + 1, iy + 1, jx + 1, jy + 1));
                         }
                 }
@@ -296,7 +303,7 @@ std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile
                         for (int jy {0}; jy < 8; jy++)
                         {
 
-                            if (moveIsLegal(Move(ix + 1, iy + 1, jx + 1, jy + 1), tiles, whoToMove))
+                            if (moveIsLegal(Move(ix + 1, iy + 1, jx + 1, jy + 1), tiles, whoToMove, CRs))
                                 availableMoves.push_back(Move(ix + 1, iy + 1, jx + 1, jy + 1));
                         }
                 }
@@ -307,7 +314,7 @@ std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile
 
 float positionRating(const std::vector<std::vector<Tile>>& tiles)
 {
-    constexpr float PAWN {1.0f};
+    constexpr float PAWN {0.7f};
     constexpr float KNIGHT {3.0f};
     constexpr float BISHOP {3.1f};
     constexpr float ROOK {5.0f};
@@ -315,19 +322,95 @@ float positionRating(const std::vector<std::vector<Tile>>& tiles)
     constexpr float KING {9999.0f};
 
     float rating {0.0f};
+    float temp;
+    bool passed;
 
     for (int ix {0}; ix < 8; ix++)
         for (int iy {0}; iy < 8; iy++)
+        {
             switch (tiles.at(ix).at(iy).getPiece())
             {
             case Piece::pawn_w:
-                rating += PAWN;
+                temp = PAWN;
+
+                passed = true;
+
+                for (int jy {0}; jy < 8; jy++)
+                {
+                    // punish doubled/tripled/etc. pawns
+                    if (tiles.at(ix).at(jy).getPiece() == pawn_w && iy != jy)
+                        temp /= 1.3f;
+                    // reward non-isolated pawns
+                    if (ix > 0 ? tiles.at(ix - 1).at(jy).getPiece() == pawn_w : true)
+                        temp *= 1.15f;
+                    if (ix < 7 ? tiles.at(ix + 1).at(jy).getPiece() == pawn_w : true)
+                        temp *= 1.15f;
+                    // reward passed pawns
+                    if ( (tiles.at(ix).at(jy).getPiece() == pawn_b ||
+                         (ix < 7 ? tiles.at(ix + 1).at(jy).getPiece() == pawn_b : true) ||
+                         (ix > 0 ? tiles.at(ix - 1).at(jy).getPiece() == pawn_b : true)) &&
+                         jy > iy)
+                         passed = false;
+                }
+                if (passed)
+                    temp *= 2.0f;
+
+                // reward centralising centre pawns (except for the f-pawn)
+                if (iy > 2 && ix > 2 && ix < 5)
+                    temp *= 1.2f;
+                if (iy > 2 && ix > 3 && ix < 5)
+                    temp *= 1.1f;
+
+                // value centre pawns over those near the edge
+                if (ix > 2 && ix < 6)
+                    temp *= 1.2f;
+                if (ix > 3 && ix < 5)
+                    temp *= 1.1f;
+
+                rating += temp;
                 break;
             case Piece::pawn_b:
-                rating -= PAWN;
+                temp = PAWN;
+                passed = true;
+
+                for (int jy {0}; jy < 8; jy++)
+                {
+                    // punish doubled/tripled/etc. pawns
+                    if (tiles.at(ix).at(jy).getPiece() == pawn_b && iy != jy)
+                        temp /= 1.3f;
+                    // reward non-isolated pawns
+                    if (ix > 0 ? tiles.at(ix - 1).at(jy).getPiece() == pawn_b : true)
+                        temp *= 1.15f;
+                    if (ix < 7 ? tiles.at(ix + 1).at(jy).getPiece() == pawn_b : true)
+                        temp *= 1.15f;
+                    // reward passed pawns
+                    if ( (tiles.at(ix).at(jy).getPiece() == pawn_w ||
+                         (ix < 7 ? tiles.at(ix + 1).at(jy).getPiece() == pawn_w : true) ||
+                         (ix > 0 ? tiles.at(ix - 1).at(jy).getPiece() == pawn_w : true)) &&
+                         jy < iy)
+                         passed = false;
+                }
+                if (passed)
+                    temp *= 2.0f;
+
+                // reward centralising centre pawns (except for the f-pawn)
+                if (iy > 5 && ix > 2 && ix < 5)
+                    temp *= 1.2f;
+                if (iy > 5 && ix > 3 && ix < 5)
+                    temp *= 1.1f;
+
+                // value centre pawns over those near the edge
+                if (ix > 2 && ix < 6)
+                    temp *= 1.2f;
+                if (ix > 3 && ix < 5)
+                    temp *= 1.1f;
+
+                rating -= temp;
                 break;
             case Piece::knight_w:
-                rating += KNIGHT;
+                temp = KNIGHT;
+
+                rating += temp;
                 break;
             case Piece::knight_b:
                 rating -= KNIGHT;
@@ -360,32 +443,65 @@ float positionRating(const std::vector<std::vector<Tile>>& tiles)
             default:
                 break;
             }
+        }
     return rating;
 }
 
-void makeVirtualMove(Move move, std::vector<std::vector<Tile>>& tiles)
+void makeMove(Move move, std::vector<std::vector<Tile>>& tiles, CastlingRights& CRs)
 {
     Piece pieceToMove {tiles.at(move.pos1X - 1).at(move.pos1Y - 1).getPiece()};
 
-    if (pieceToMove == king_w && move.pos2X == 3 && move.pos2Y == 1)
+    if (pieceToMove == king_w)
+    {
+        CRs.whiteCanCastleKs = false;
+        CRs.whiteCanCastleQs = false;
+    }
+
+    if (pieceToMove == king_b)
+    {
+        CRs.blackCanCastleKs = false;
+        CRs.blackCanCastleQs = false;
+    }
+
+    if ((pieceToMove == king_w && move.pos2X == 3 && move.pos2Y == 1) || (pieceToMove == king_w && move.pos2X == 7 && move.pos2Y == 1))
+    {
+        CRs.whiteCanCastleKs = false;
+        CRs.whiteCanCastleQs = false;
+    }
+
+    if ((pieceToMove == king_b && move.pos2X == 3 && move.pos2Y == 8) || (pieceToMove == king_b && move.pos2X == 7 && move.pos2Y == 8))
+    {
+        CRs.blackCanCastleKs = false;
+        CRs.blackCanCastleQs = false;
+    }
+    if (move.pos1X == 1 && move.pos1Y == 1)
+        CRs.whiteCanCastleQs = false;
+    if (move.pos1X == 8 && move.pos1Y == 1)
+        CRs.whiteCanCastleKs = false;
+    if (move.pos1X == 1 && move.pos1Y == 8)
+        CRs.blackCanCastleQs = false;
+    if (move.pos1X == 8 && move.pos1Y == 8)
+        CRs.blackCanCastleKs = false;
+
+    if (pieceToMove == king_w && move.pos1X == 5 && move.pos1Y == 1 && move.pos2X == 3 && move.pos2Y == 1)
     {
         tiles.at(0).at(0).setPiece(Piece::none);
         tiles.at(3).at(0).setPiece(Piece::rook_w);
     }
 
-    if (pieceToMove == king_w && move.pos2X == 7 && move.pos2Y == 1)
+    if (pieceToMove == king_w && move.pos1X == 5 && move.pos1Y == 1 && move.pos2X == 7 && move.pos2Y == 1)
     {
         tiles.at(7).at(0).setPiece(Piece::none);
         tiles.at(5).at(0).setPiece(Piece::rook_w);
     }
 
-    if (pieceToMove == king_b && move.pos2X == 3 && move.pos2Y == 8)
+    if (pieceToMove == king_b && move.pos1X == 5 && move.pos1Y == 8 && move.pos2X == 3 && move.pos2Y == 8)
     {
         tiles.at(0).at(7).setPiece(Piece::none);
         tiles.at(3).at(7).setPiece(Piece::rook_b);
     }
 
-    if (pieceToMove == king_b && move.pos2X == 7 && move.pos2Y == 8)
+    if (pieceToMove == king_b && move.pos1X == 5 && move.pos1Y == 8 && move.pos2X == 7 && move.pos2Y == 8)
     {
         tiles.at(7).at(7).setPiece(Piece::none);
         tiles.at(5).at(7).setPiece(Piece::rook_b);
@@ -395,71 +511,62 @@ void makeVirtualMove(Move move, std::vector<std::vector<Tile>>& tiles)
     tiles.at(move.pos2X - 1).at(move.pos2Y - 1).setPiece(
             tiles.at(move.pos1X - 1).at(move.pos1Y - 1).getPiece());
     tiles.at(move.pos1X - 1).at(move.pos1Y - 1).setPiece(Piece::none);
+
+    for (int ix {0}; ix < 8; ix++)
+    {
+    if (tiles.at(ix).at(0).getPiece() == Piece::pawn_b)
+        tiles.at(ix).at(0).setPiece(Piece::queen_b);
+    if (tiles.at(ix).at(7).getPiece() == Piece::pawn_w)
+        tiles.at(ix).at(7).setPiece(Piece::queen_w);
+    }
 }
 
-void makeMove(Move move, std::vector<std::vector<Tile>>& tiles)
+Move bestMove(std::vector<std::vector<Tile>> tiles, int depth, bool player, CastlingRights CRsCopy)
 {
-    Piece pieceToMove {tiles.at(move.pos1X - 1).at(move.pos1Y - 1).getPiece()};
+    std::vector<Move> allMoves (getAvailableMoves(player, tiles, CRsCopy));
+    // srand(time(0));
+    // Move best = allMoves.at(floor((static_cast<float>(rand()) / RAND_MAX) * allMoves.size()));
+    Move best = allMoves.at(0);
 
-    if (pieceToMove == king_w)
-    {
-        whiteCanCastleKs = false;
-        whiteCanCastleQs = false;
-    }
+    float bestPosition = ((!player)*2 - 1) * 999999;
 
-    if (pieceToMove == king_b)
-    {
-        blackCanCastleKs = false;
-        blackCanCastleQs = false;
-    }
-
-    if ((pieceToMove == king_w && move.pos2X == 3 && move.pos2Y == 1) || (pieceToMove == king_w && move.pos2X == 7 && move.pos2Y == 1))
-    {
-        whiteCanCastleKs = false;
-        whiteCanCastleQs = false;
-    }
-
-    if ((pieceToMove == king_b && move.pos2X == 3 && move.pos2Y == 8) || (pieceToMove == king_b && move.pos2X == 7 && move.pos2Y == 8))
-    {
-        blackCanCastleKs = false;
-        blackCanCastleQs = false;
-    }
-    if (move.pos1X == 1 && move.pos1Y == 1)
-        whiteCanCastleQs = false;
-    if (move.pos1X == 8 && move.pos1Y == 1)
-        whiteCanCastleKs = false;
-    if (move.pos1X == 1 && move.pos1Y == 8)
-        blackCanCastleQs = false;
-    if (move.pos1X == 8 && move.pos1Y == 8)
-        blackCanCastleKs = false;
-
-     makeVirtualMove(move, tiles);
-}
-
-Move bestMove(std::vector<std::vector<Tile>> tiles, int depth, bool player)
-{
-    std::vector<Move> allMoves (getAvailableMoves(player, tiles));
-    srand(time(0));
-    Move best = allMoves.at(floor((static_cast<float>(rand()) / RAND_MAX) * allMoves.size()));
-
-    for (auto move : allMoves)
-    {
-        std::vector<std::vector<Tile>> newPosition {tiles};
-        makeVirtualMove(move, newPosition);
-        if (depth > 1)
+    #ifdef DEBUG
+    if (depth == MAX_DEPTH)
+        fprintf(stderr, "DEPTH = %d\n", depth);
+    #endif // DEBUG
+        for (auto move : allMoves)
         {
-            makeVirtualMove(bestMove(newPosition, depth - 1, !player), newPosition);
-        }
+            std::vector<std::vector<Tile>> newPosition = tiles;
+            makeMove(move, newPosition, CRsCopy);
+            int d = depth;
+            while (d > 1)
+            {
+                makeMove(bestMove(newPosition, d - 1, (window.getPlayer() + d) % 2, CRsCopy), newPosition, CRsCopy);
+                d--;
+            }
 
-        if (player)
-        {
-            if (positionRating(newPosition) > positionRating(tiles))
-                best = move;
+            if (player == 1)
+                if (positionRating(newPosition) > bestPosition)
+                {
+                    best = move;
+                    bestPosition = positionRating(newPosition);
+                }
+            if (player == 0)
+                if (positionRating(newPosition) < bestPosition)
+                {
+                    best = move;
+                    bestPosition = positionRating(newPosition);
+                }
+            #ifdef DEBUG
+            if (depth == MAX_DEPTH)
+                fprintf(stderr, "Possible move for %d = %d, %d to %d, %d  Expected rating change = %f\n",
+                        player, move.pos1X, move.pos1Y, move.pos2X, move.pos2Y, positionRating(newPosition) - positionRating(tiles));
+            #endif //DEBUG
         }
-        else
-            if (positionRating(newPosition) < positionRating(tiles))
-                best = move;
-    }
+    #ifdef DEBUG
+    if (depth == MAX_DEPTH)
+        fprintf(stderr, "\n");
+    #endif // DEBUG
     return best;
 }
 
@@ -471,11 +578,6 @@ void updateGame(std::vector<std::vector<Tile>>& tiles)
 
     for (int ix {0}; ix < 8; ix++)
     {
-        // Pawn promotion
-        if (tiles.at(ix).at(0).getPiece() == Piece::pawn_b)
-            tiles.at(ix).at(0).setPiece(Piece::queen_b);
-        if (tiles.at(ix).at(7).getPiece() == Piece::pawn_w)
-            tiles.at(ix).at(7).setPiece(Piece::queen_w);
         for (int iy {0}; iy < 8; iy++)
         {
             // End the game if the king was captured
@@ -534,6 +636,7 @@ void updateGame(std::vector<std::vector<Tile>>& tiles)
             window.setGameOver(2);
         }
     }
+    fprintf(stderr, "Rating = %f\n", positionRating(tiles));
 }
 
 int main()
@@ -624,6 +727,7 @@ int main()
     int tileY {0};
     int selectedTileX {0};
     int selectedTileY {0};
+    CastlingRights CRs;
 
     while (window.shouldRun())
     {
@@ -634,7 +738,7 @@ int main()
 
         // Selecting/Moving the pieces
         window.getSelectedTile(tileX, tileY);
-        if (window.getPlayer() == PLAY_AS)
+        if ((window.getPlayer() == PLAY_AS || !PLAY_AGAINST_AI) && !AI_VS_AI)
         {
             if (!selectedTileX)
             {
@@ -649,9 +753,9 @@ int main()
             else if (tileX)
             {
                 Move move(selectedTileX, selectedTileY, tileX, tileY);
-                if (moveIsLegal(move, tiles, window.getPlayer()))
+                if (moveIsLegal(move, tiles, window.getPlayer(), CRs))
                 {
-                    makeMove(move, tiles);
+                    makeMove(move, tiles, CRs);
                     updateGame(tiles);
                     if (gameOver)
                         goto gameOver;
@@ -673,7 +777,7 @@ int main()
         }
         else // Have the AI play
         {
-            makeMove(bestMove(tiles, 4, !PLAY_AS), tiles);
+            makeMove(bestMove(tiles, MAX_DEPTH, window.getPlayer(), CRs), tiles, CRs);
             updateGame(tiles);
             if (gameOver)
                 goto gameOver;
