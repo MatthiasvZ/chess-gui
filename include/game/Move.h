@@ -5,8 +5,9 @@
 #include "game/Tile.h"
 #include <vector>
 
-bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMove, const CastlingRights& CRs, const std::vector<bool>& ePRs);
-std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile>> tiles, const CastlingRights& CRs, const std::vector<bool>& ePRs);
+bool kingInCheck(std::vector<std::vector<Tile>>& tiles, bool whoToMove, const CastlingRights& CRs, const std::vector<bool>& ePRs, unsigned char* posX = nullptr, unsigned char* posY = nullptr);
+bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMove, const CastlingRights& CRs, const std::vector<bool>& ePRs, bool firstRunThrough = 1);
+std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile>> tiles, const CastlingRights& CRs, const std::vector<bool>& ePRs, bool firstRunThrough = 1);
 void makeMove(Move move, std::vector<std::vector<Tile>>& tiles, CastlingRights& CRs, std::vector<bool>& ePRs);
 void updateGame(std::vector<std::vector<Tile>>& tiles);
 

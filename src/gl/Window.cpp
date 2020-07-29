@@ -1,13 +1,13 @@
 #include "gl/Window.h"
 #include "gl/Input.h"
 #include "gl/Renderer.h"
+#include "game/Common.h"
 
 #include <GL/glew.h>
 #include <ctime>
 #include <stdio.h>
 
 Input input;
-bool gameOver {false};
 
 void Window::error_callback(int error, const char* description)
 {
@@ -108,7 +108,14 @@ Window::Window()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+    #if L10N_EN_GB
+    window = glfwCreateWindow(800, 800, "Chess (white to move), FPS = 0", nullptr, nullptr);
+    #endif // L10N_EN_GB
+
+    #if L10N_DE_DE
     window = glfwCreateWindow(800, 800, "Schach (Weiß am Zuge), FPS = 0", nullptr, nullptr);
+    #endif // L10N_DE_DE
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -133,8 +140,7 @@ bool Window::shouldRun()
 
 void Window::updateWindow()
 {
-    if (!gameOver)
-        glfwSwapBuffers(window);
+    glfwSwapBuffers(window);
     glfwPollEvents();
 }
 
@@ -143,10 +149,20 @@ void Window::countfps()
     if (time(&tn) != ta)
     {
         ta++;
+        #if L10N_EN_GB
+        if (playerToMove)
+            glfwSetWindowTitle(window, ("Chess (white to move), FPS =" + std::to_string(fps)).c_str());
+        else
+            glfwSetWindowTitle(window, ("Chess (black to move), FPS =" + std::to_string(fps)).c_str());
+        #endif // L10N_EN_GB
+
+        #if L10N_DE_DE
         if (playerToMove)
             glfwSetWindowTitle(window, ("Schach (Weiß am Zuge), FPS =" + std::to_string(fps)).c_str());
         else
             glfwSetWindowTitle(window, ("Schach (Schwarz am Zuge), FPS =" + std::to_string(fps)).c_str());
+        #endif // L10N_DE_DE
+
         prev_fps = fps;
         avg_fps += fps;
         seconds++;
@@ -170,15 +186,49 @@ void Window::removeSelection()
 
 void Window::updateTitle()
 {
+    #if L10N_EN_GB
+    if (playerToMove)
+        glfwSetWindowTitle(window, ("Chess (white to move), FPS =" + std::to_string(prev_fps)).c_str());
+    else
+        glfwSetWindowTitle(window, ("Chess (black to move), FPS =" + std::to_string(prev_fps)).c_str());
+    #endif // L10N_EN_GB
+
+    #if L10N_DE_DE
     if (playerToMove)
         glfwSetWindowTitle(window, ("Schach (Weiß am Zuge), FPS =" + std::to_string(prev_fps)).c_str());
     else
         glfwSetWindowTitle(window, ("Schach (Schwarz am Zuge), FPS =" + std::to_string(prev_fps)).c_str());
+    #endif // L10N_DE_DE
 }
 
 void Window::setGameOver(int outcome)
 {
-    gameOver = true;
+    #if L10N_EN_GB
+    switch (outcome)
+    {
+    case 0:
+        glfwSetWindowTitle(window, "Checkmate, black wins!");
+        break;
+    case 1:
+        glfwSetWindowTitle(window, "Checkmate, white wins!");
+        break;
+    case 2:
+        glfwSetWindowTitle(window, "Draw, not enough material for a mate!");
+        break;
+    case 3:
+        glfwSetWindowTitle(window, "Draw, black is in stalemate!");
+        break;
+    case 4:
+        glfwSetWindowTitle(window, "Draw, white is in stalemate!");
+        break;
+
+        break;
+    default:
+        break;
+    }
+    #endif // L10N_EN_GB
+
+    #if L10N_DE_DE
     switch (outcome)
     {
     case 0:
@@ -188,17 +238,20 @@ void Window::setGameOver(int outcome)
         glfwSetWindowTitle(window, "Schachmatt, Weiß hat gewonnen!");
         break;
     case 2:
-        glfwSetWindowTitle(window, "Remis, mangels Material ist kein Matt mehr möglich!");
+        glfwSetWindowTitle(window, "Remis, mangels Materials ist kein Matt mehr möglich!");
         break;
     case 3:
-        glfwSetWindowTitle(window, "Remis, Weiß ist patt!");
+        glfwSetWindowTitle(window, "Remis, Schwarz ist patt!");
         break;
     case 4:
-        glfwSetWindowTitle(window, "Remis, Schwarz ist patt!");
+        glfwSetWindowTitle(window, "Remis, Weiß ist patt!");
+        break;
+
         break;
     default:
         break;
     }
+    #endif // L10N_DE_DE
 }
 Window::~Window()
 {

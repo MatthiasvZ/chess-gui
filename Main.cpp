@@ -20,37 +20,36 @@ Window window;
 bool gameOver {false};
 }
 
-void updateGame(std::vector<std::vector<Tile>>& tiles)
+unsigned char kingInCheckX {0};
+unsigned char kingInCheckY {0};
+
+Move lastMove;
+
+void updateGame(std::vector<std::vector<Tile>>& tiles, const CastlingRights& CRs, const std::vector<bool>& ePRs)
 {
-    bool whiteKingFound {false};
-    bool blackKingFound {false};
+    if (!kingInCheck(tiles, !window.getPlayer(), CRs, ePRs, &kingInCheckX, &kingInCheckY))
+    {
+        kingInCheckX = 0;
+        kingInCheckY = 0;
+    }
+    else if (getAvailableMoves(!window.getPlayer(), tiles, CRs, ePRs).size() == 0)
+    {
+        window.setGameOver(window.getPlayer());
+        gameOver = true;
+    }
+    if (getAvailableMoves(!window.getPlayer(), tiles, CRs, ePRs).size() == 0 && !gameOver)
+    {
+        window.setGameOver(!window.getPlayer() + 3);
+        gameOver = true;
+    }
+
     bool allPawnsGone {true};
-
     for (int ix {0}; ix < 8; ix++)
-    {
         for (int iy {0}; iy < 8; iy++)
-        {
-            // End the game if the king was captured
-            if (tiles.at(ix).at(iy).getPiece() == Piece::king_w)
-                whiteKingFound = true;
-            if (tiles.at(ix).at(iy).getPiece() == Piece::king_b)
-                blackKingFound = true;
-
             if (tiles.at(ix).at(iy).getPiece() == Piece::pawn_w ||
-                tiles.at(ix).at(iy).getPiece() == Piece::pawn_w)
+                tiles.at(ix).at(iy).getPiece() == Piece::pawn_b)
                 allPawnsGone = false;
-        }
-    }
-    if (!whiteKingFound)
-    {
-        window.setGameOver(0);
-        gameOver = true;
-    }
-    if (!blackKingFound)
-    {
-        window.setGameOver(1);
-        gameOver = true;
-    }
+
     if (allPawnsGone)
     {
         unsigned char bishopCount_W {0};
@@ -172,6 +171,9 @@ int main()
     Texture king_W("assets/king_white.png", 11);
     Texture king_B("assets/king_black.png", 12);
     Texture selection("assets/selection.png", 13);
+    Texture preview("assets/preview.png", 14);
+    Texture check("assets/check.png", 15);
+    Texture previous("assets/previous.png", 16);
 
     int tileX {0};
     int tileY {0};
@@ -180,13 +182,9 @@ int main()
     CastlingRights CRs;
     std::vector<bool> ePRs {false, false, false, false, false, false, false, false};
 
+    // Main loop
     while (window.shouldRun())
     {
-        renderer.clear();
-
-        shader.setUniform1i("tex", 0);
-        renderer.drawVA(boardVao, ibo);
-
         // Selecting/Moving the pieces
         window.getSelectedTile(tileX, tileY);
         if ((window.getPlayer() == PLAY_AS || !PLAY_AGAINST_AI) && !AI_VS_AI)
@@ -194,9 +192,9 @@ int main()
             if (!selectedTileX)
             {
                 if (!tileX)
-                    goto postTileSelection;
+                    goto draw;
                 if (tiles.at(tileX - 1).at(tileY - 1).getPiece() == Piece::none)
-                    goto postTileSelection;
+                    goto draw;
                 selectedTileX = tileX;
                 selectedTileY = tileY;
                 window.removeSelection();
@@ -207,9 +205,10 @@ int main()
                 if (moveIsLegal(move, tiles, window.getPlayer(), CRs, ePRs))
                 {
                     makeMove(move, tiles, CRs, ePRs);
-                    updateGame(tiles);
+                    lastMove = move;
+                    updateGame(tiles, CRs, ePRs);
                     if (gameOver)
-                        goto gameOver;
+                        goto draw;
                     window.setplayer(!window.getPlayer());
                     window.updateTitle();
                 }
@@ -217,26 +216,53 @@ int main()
                 selectedTileY = 0;
                 window.removeSelection();
             }
-            postTileSelection: // Skip ifs, if the tile is empty
-
-            // Draw the selection underlay
-            if (selectedTileX)
-            {
-                shader.setUniform1i("tex", 13);
-                renderer.drawVA(vaos.at(selectedTileX - 1).at(selectedTileY - 1), ibo);
-            }
         }
         else // Have the AI play
         {
-            makeMove(bestMove(tiles, MAX_DEPTH, window.getPlayer(), CRs, ePRs), tiles, CRs, ePRs);
-            updateGame(tiles);
+            Move move = bestMove(tiles, 1, window.getPlayer(), CRs, ePRs);
+            makeMove(move, tiles, CRs, ePRs);
+            lastMove = move;
+            updateGame(tiles, CRs, ePRs);
             if (gameOver)
-                goto gameOver;
+                goto draw;
             window.setplayer(!window.getPlayer());
             window.updateTitle();
         }
 
+        draw:
         // Draw the pieces
+        renderer.clear();
+
+        shader.setUniform1i("tex", 0);
+        renderer.drawVA(boardVao, ibo);
+
+        if (selectedTileX)
+        {
+            shader.setUniform1i("tex", 13);
+            renderer.drawVA(vaos.at(selectedTileX - 1).at(selectedTileY - 1), ibo);
+
+            shader.setUniform1i("tex", 14);
+            std::vector<Move> allMoves {getAvailableMoves(window.getPlayer(), tiles, CRs, ePRs)};
+            std::vector<Move> allEnemyMoves {getAvailableMoves(!window.getPlayer(), tiles, CRs, ePRs)};
+            allMoves.insert(allMoves.end(), allEnemyMoves.begin(), allEnemyMoves.end());
+
+            for (auto move : allMoves)
+                if (move.pos1X == selectedTileX && move.pos1Y == selectedTileY)
+                    renderer.drawVA(vaos.at(move.pos2X - 1).at(move.pos2Y - 1), ibo);
+        }
+        if (kingInCheckX)
+        {
+            shader.setUniform1i("tex", 15);
+            renderer.drawVA(vaos.at(kingInCheckX - 1).at(kingInCheckY - 1), ibo);
+        }
+
+        if (lastMove.pos1X)
+        {
+            shader.setUniform1i("tex", 16);
+            renderer.drawVA(vaos.at(lastMove.pos1X - 1).at(lastMove.pos1Y - 1), ibo);
+            renderer.drawVA(vaos.at(lastMove.pos2X - 1).at(lastMove.pos2Y - 1), ibo);
+        }
+
         for (int ix {0}; ix < 8; ix++)
             for (int iy {0}; iy < 8; iy++)
             {
@@ -246,20 +272,39 @@ int main()
                 renderer.drawVA(vaos.at(ix).at(iy), ibo);
             }
 
-        window.countfps();
+        if (!gameOver)
+            window.countfps();
         window.updateWindow();
         #ifdef DEBUG
             ErrorFeedback::getErrors();
         #endif //DEBUG
+        if (gameOver)
+            break;
     }
 
-    gameOver:
+    // Game-Over Screen
     while (window.shouldRun())
     {
+        renderer.clear();
+
+        shader.setUniform1i("tex", 0);
+        renderer.drawVA(boardVao, ibo);
+
+        if (kingInCheckX)
+        {
+            shader.setUniform1i("tex", 15);
+            renderer.drawVA(vaos.at(kingInCheckX - 1).at(kingInCheckY - 1), ibo);
+        }
+
+        for (int ix {0}; ix < 8; ix++)
+            for (int iy {0}; iy < 8; iy++)
+            {
+                if (!tiles.at(ix).at(iy).getPiece())
+                    continue;
+                shader.setUniform1i("tex", tiles.at(ix).at(iy).getPiece());
+                renderer.drawVA(vaos.at(ix).at(iy), ibo);
+            }
         window.updateWindow();
-        #ifdef DEBUG
-            ErrorFeedback::getErrors();
-        #endif //DEBUG
     }
     return 0;
 }

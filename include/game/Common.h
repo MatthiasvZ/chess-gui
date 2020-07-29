@@ -4,14 +4,21 @@
 #define PLAY_AS 1 // 1 = white, 0 = black
 #define PLAY_AGAINST_AI true
 #define AI_VS_AI false
+#define MIN_DEPTH 1 // must be odd?
 #define MAX_DEPTH 3 // must be odd?
+
+#define DEBUG_AI_RANDOM 0
+#define DEBUG_AI_SLOW_LEGALITY_CHECK 0
+
+#define L10N_EN_GB 1
+#define L10N_DE_DE 0
 
 struct Move
 {
-    int pos1X;
-    int pos1Y;
-    int pos2X;
-    int pos2Y;
+    unsigned char pos1X;
+    unsigned char pos1Y;
+    unsigned char pos2X;
+    unsigned char pos2Y;
 };
 
 struct CastlingRights

@@ -51,9 +51,9 @@ float positionRating(const std::vector<std::vector<Tile>>& tiles)
                     temp *= 2.0f;
 
                 // reward centralising centre pawns (except for the f-pawn)
-                if (iy > 2 && ix > 2 && ix < 5)
+                if (iy > 2 && ix > 1 && ix < 5)
                     temp *= 1.2f;
-                if (iy > 2 && ix > 3 && ix < 5)
+                if (iy > 2 && ix > 2 && ix < 5)
                     temp *= 1.1f;
 
                 // value centre pawns over those near the edge
@@ -89,9 +89,9 @@ float positionRating(const std::vector<std::vector<Tile>>& tiles)
                     temp *= 2.0f;
 
                 // reward centralising centre pawns (except for the f-pawn)
-                if (iy > 5 && ix > 2 && ix < 5)
+                if (iy < 5 && ix > 1 && ix < 5)
                     temp *= 1.2f;
-                if (iy > 5 && ix > 3 && ix < 5)
+                if (iy < 5 && ix > 2 && ix < 5)
                     temp *= 1.1f;
 
                 // value centre pawns over those near the edge
@@ -144,15 +144,21 @@ float positionRating(const std::vector<std::vector<Tile>>& tiles)
 
 Move bestMove(std::vector<std::vector<Tile>> tiles, int depth, bool player, CastlingRights CRsCopy, std::vector<bool> ePRsCopy)
 {
-    std::vector<Move> allMoves (getAvailableMoves(player, tiles, CRsCopy, ePRsCopy));
+    #if DEBUG_AI_SLOW_LEGALITY_CHECK == 1
+        std::vector<Move> allMoves (getAvailableMoves(player, tiles, CRsCopy, ePRsCopy, 1));
+    #else
+        std::vector<Move> allMoves (getAvailableMoves(player, tiles, CRsCopy, ePRsCopy, 0));
+    #endif // DEBUG_AI_SLOW_LEGALITY_CHECK
     srand(time(0));
     Move best = allMoves.at(floor((static_cast<float>(rand()) / RAND_MAX) * allMoves.size()));
-    //Move best = allMoves.at(0);
+    #if DEBUG_AI_RANDOM == 1
+        return best;
+    #endif // DEBUG_AI_RANDOM
 
     float bestPosition = ((!player)*2 - 1) * 999999;
 
     #ifdef DEBUG
-    if (depth == MAX_DEPTH)
+    if (depth == 1)
         fprintf(stderr, "DEPTH = %d\n", depth);
     #endif // DEBUG
         for (auto move : allMoves)
@@ -161,11 +167,11 @@ Move bestMove(std::vector<std::vector<Tile>> tiles, int depth, bool player, Cast
             makeMove(move, newPosition, CRsCopy, ePRsCopy);
             int d = depth;
             int p = player;
-            while (d > 1)
+            while (d <= MAX_DEPTH)
             {
                 p = !p;
-                makeMove(bestMove(newPosition, d - 1, p, CRsCopy, ePRsCopy), newPosition, CRsCopy, ePRsCopy);
-                d--;
+                makeMove(bestMove(newPosition, d + 1, p, CRsCopy, ePRsCopy), newPosition, CRsCopy, ePRsCopy);
+                d++;
             }
 
             if (player == 1)
@@ -181,13 +187,13 @@ Move bestMove(std::vector<std::vector<Tile>> tiles, int depth, bool player, Cast
                     bestPosition = positionRating(newPosition);
                 }
             #ifdef DEBUG
-            if (depth == MAX_DEPTH)
+            if (depth == 1)
                 fprintf(stderr, "Possible move for %d = %d, %d to %d, %d  Expected rating change = %f\n",
                         player, move.pos1X, move.pos1Y, move.pos2X, move.pos2Y, positionRating(newPosition) - positionRating(tiles));
             #endif //DEBUG
         }
     #ifdef DEBUG
-    if (depth == MAX_DEPTH)
+    if (depth == 1)
         fprintf(stderr, "\n");
     #endif // DEBUG
     return best;
