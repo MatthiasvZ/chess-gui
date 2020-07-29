@@ -1,18 +1,8 @@
 #ifndef TILE_H
 #define TILE_H
 
+#include "game/Common.h"
 #include <vector>
-
-enum Piece : int
-{
-    none,
-    pawn_w, pawn_b,
-    knight_w, knight_b,
-    bishop_w, bishop_b,
-    rook_w, rook_b,
-    queen_w, queen_b,
-    king_w, king_b
-};
 
 class Tile
 {
