@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj
 DEP_RELEASE = 
 OUT_RELEASE = bin/chess
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/src/gl/VertexBuffer.o $(OBJDIR_DEBUG)/src/AI.o $(OBJDIR_DEBUG)/src/Move.o $(OBJDIR_DEBUG)/src/game/Tile.o $(OBJDIR_DEBUG)/src/gl/IndexBuffer.o $(OBJDIR_DEBUG)/src/gl/Renderer.o $(OBJDIR_DEBUG)/src/gl/Shader.o $(OBJDIR_DEBUG)/src/gl/Texture.o $(OBJDIR_DEBUG)/src/gl/VertexArray.o $(OBJDIR_DEBUG)/src/gl/VertexBufferLayout.o $(OBJDIR_DEBUG)/src/gl/Window.o $(OBJDIR_DEBUG)/src/other/ErrorFeedback.o $(OBJDIR_DEBUG)/src/other/FileManagement.o $(OBJDIR_DEBUG)/src/vendor/stb_image/stb_image.o $(OBJDIR_DEBUG)/Main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/src/gl/VertexBuffer.o $(OBJDIR_DEBUG)/src/game/AI.o $(OBJDIR_DEBUG)/src/game/Move.o $(OBJDIR_DEBUG)/src/game/Tile.o $(OBJDIR_DEBUG)/src/gl/IndexBuffer.o $(OBJDIR_DEBUG)/src/gl/Renderer.o $(OBJDIR_DEBUG)/src/gl/Shader.o $(OBJDIR_DEBUG)/src/gl/Texture.o $(OBJDIR_DEBUG)/src/gl/VertexArray.o $(OBJDIR_DEBUG)/src/gl/VertexBufferLayout.o $(OBJDIR_DEBUG)/src/gl/Window.o $(OBJDIR_DEBUG)/src/other/ErrorFeedback.o $(OBJDIR_DEBUG)/src/other/FileManagement.o $(OBJDIR_DEBUG)/src/vendor/stb_image/stb_image.o $(OBJDIR_DEBUG)/Main.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/src/gl/VertexBuffer.o $(OBJDIR_RELEASE)/src/AI.o $(OBJDIR_RELEASE)/src/Move.o $(OBJDIR_RELEASE)/src/game/Tile.o $(OBJDIR_RELEASE)/src/gl/IndexBuffer.o $(OBJDIR_RELEASE)/src/gl/Renderer.o $(OBJDIR_RELEASE)/src/gl/Shader.o $(OBJDIR_RELEASE)/src/gl/Texture.o $(OBJDIR_RELEASE)/src/gl/VertexArray.o $(OBJDIR_RELEASE)/src/gl/VertexBufferLayout.o $(OBJDIR_RELEASE)/src/gl/Window.o $(OBJDIR_RELEASE)/src/other/ErrorFeedback.o $(OBJDIR_RELEASE)/src/other/FileManagement.o $(OBJDIR_RELEASE)/src/vendor/stb_image/stb_image.o $(OBJDIR_RELEASE)/Main.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/src/gl/VertexBuffer.o $(OBJDIR_RELEASE)/src/game/AI.o $(OBJDIR_RELEASE)/src/game/Move.o $(OBJDIR_RELEASE)/src/game/Tile.o $(OBJDIR_RELEASE)/src/gl/IndexBuffer.o $(OBJDIR_RELEASE)/src/gl/Renderer.o $(OBJDIR_RELEASE)/src/gl/Shader.o $(OBJDIR_RELEASE)/src/gl/Texture.o $(OBJDIR_RELEASE)/src/gl/VertexArray.o $(OBJDIR_RELEASE)/src/gl/VertexBufferLayout.o $(OBJDIR_RELEASE)/src/gl/Window.o $(OBJDIR_RELEASE)/src/other/ErrorFeedback.o $(OBJDIR_RELEASE)/src/other/FileManagement.o $(OBJDIR_RELEASE)/src/vendor/stb_image/stb_image.o $(OBJDIR_RELEASE)/Main.o
 
 all: debug release
 
@@ -51,7 +51,6 @@ clean: clean_debug clean_release
 before_debug: 
 	test -d bin/Debug || mkdir -p bin/Debug
 	test -d $(OBJDIR_DEBUG)/src/gl || mkdir -p $(OBJDIR_DEBUG)/src/gl
-	test -d $(OBJDIR_DEBUG)/src || mkdir -p $(OBJDIR_DEBUG)/src
 	test -d $(OBJDIR_DEBUG)/src/game || mkdir -p $(OBJDIR_DEBUG)/src/game
 	test -d $(OBJDIR_DEBUG)/src/other || mkdir -p $(OBJDIR_DEBUG)/src/other
 	test -d $(OBJDIR_DEBUG)/src/vendor/stb_image || mkdir -p $(OBJDIR_DEBUG)/src/vendor/stb_image
@@ -67,11 +66,11 @@ out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 $(OBJDIR_DEBUG)/src/gl/VertexBuffer.o: src/gl/VertexBuffer.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/gl/VertexBuffer.cpp -o $(OBJDIR_DEBUG)/src/gl/VertexBuffer.o
 
-$(OBJDIR_DEBUG)/src/AI.o: src/AI.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/AI.cpp -o $(OBJDIR_DEBUG)/src/AI.o
+$(OBJDIR_DEBUG)/src/game/AI.o: src/game/AI.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/AI.cpp -o $(OBJDIR_DEBUG)/src/game/AI.o
 
-$(OBJDIR_DEBUG)/src/Move.o: src/Move.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Move.cpp -o $(OBJDIR_DEBUG)/src/Move.o
+$(OBJDIR_DEBUG)/src/game/Move.o: src/game/Move.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/Move.cpp -o $(OBJDIR_DEBUG)/src/game/Move.o
 
 $(OBJDIR_DEBUG)/src/game/Tile.o: src/game/Tile.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/game/Tile.cpp -o $(OBJDIR_DEBUG)/src/game/Tile.o
@@ -113,7 +112,6 @@ clean_debug:
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
 	rm -rf bin/Debug
 	rm -rf $(OBJDIR_DEBUG)/src/gl
-	rm -rf $(OBJDIR_DEBUG)/src
 	rm -rf $(OBJDIR_DEBUG)/src/game
 	rm -rf $(OBJDIR_DEBUG)/src/other
 	rm -rf $(OBJDIR_DEBUG)/src/vendor/stb_image
@@ -122,7 +120,6 @@ clean_debug:
 before_release: 
 	test -d bin || mkdir -p bin
 	test -d $(OBJDIR_RELEASE)/src/gl || mkdir -p $(OBJDIR_RELEASE)/src/gl
-	test -d $(OBJDIR_RELEASE)/src || mkdir -p $(OBJDIR_RELEASE)/src
 	test -d $(OBJDIR_RELEASE)/src/game || mkdir -p $(OBJDIR_RELEASE)/src/game
 	test -d $(OBJDIR_RELEASE)/src/other || mkdir -p $(OBJDIR_RELEASE)/src/other
 	test -d $(OBJDIR_RELEASE)/src/vendor/stb_image || mkdir -p $(OBJDIR_RELEASE)/src/vendor/stb_image
@@ -138,11 +135,11 @@ out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 $(OBJDIR_RELEASE)/src/gl/VertexBuffer.o: src/gl/VertexBuffer.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/gl/VertexBuffer.cpp -o $(OBJDIR_RELEASE)/src/gl/VertexBuffer.o
 
-$(OBJDIR_RELEASE)/src/AI.o: src/AI.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/AI.cpp -o $(OBJDIR_RELEASE)/src/AI.o
+$(OBJDIR_RELEASE)/src/game/AI.o: src/game/AI.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/AI.cpp -o $(OBJDIR_RELEASE)/src/game/AI.o
 
-$(OBJDIR_RELEASE)/src/Move.o: src/Move.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Move.cpp -o $(OBJDIR_RELEASE)/src/Move.o
+$(OBJDIR_RELEASE)/src/game/Move.o: src/game/Move.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/Move.cpp -o $(OBJDIR_RELEASE)/src/game/Move.o
 
 $(OBJDIR_RELEASE)/src/game/Tile.o: src/game/Tile.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/game/Tile.cpp -o $(OBJDIR_RELEASE)/src/game/Tile.o
@@ -184,7 +181,6 @@ clean_release:
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
 	rm -rf bin
 	rm -rf $(OBJDIR_RELEASE)/src/gl
-	rm -rf $(OBJDIR_RELEASE)/src
 	rm -rf $(OBJDIR_RELEASE)/src/game
 	rm -rf $(OBJDIR_RELEASE)/src/other
 	rm -rf $(OBJDIR_RELEASE)/src/vendor/stb_image
