@@ -1,8 +1,8 @@
 #include "game/Move.h"
 
-bool kingInCheck(std::vector<std::vector<Tile>>& tiles, bool whoToMove, const CastlingRights& CRs, const std::vector<bool>& ePRs, unsigned char* posX, unsigned char* posY)
+bool kingInCheck(const std::vector<std::vector<Tile>>& tiles, bool whoToMove, const CastlingRights& CRs, const std::vector<bool>& ePRs, unsigned char* posX, unsigned char* posY)
 {
-    for (auto move : getAvailableMoves(!whoToMove, tiles, CRs, ePRs, 0))
+    for (auto move : getAvailableMoves(!whoToMove, tiles, CRs, ePRs, 0, 1))
         if (tiles.at(move.pos2X - 1).at(move.pos2Y - 1).getPiece() == (whoToMove ? Piece::king_w : Piece::king_b))
         {
             if (posX != nullptr)
@@ -14,7 +14,7 @@ bool kingInCheck(std::vector<std::vector<Tile>>& tiles, bool whoToMove, const Ca
     return 0;
 }
 
-bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMove, const CastlingRights& CRs, const std::vector<bool>& ePRs, bool firstRunThrough)
+bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMove, const CastlingRights& CRs, const std::vector<bool>& ePRs, bool firstRunThrough, bool slowMode)
 {
     bool pathIsClear;
     Piece pieceToMove {tiles.at(move.pos1X - 1).at(move.pos1Y - 1).getPiece()};
@@ -33,6 +33,18 @@ bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMov
         if (kingInCheck(temp, whoToMove, tempCRs, tempEPRs))
             return false;
     }
+    #if DEBUG_AI_SLOW_LEGALITY_CHECK == 0
+    if (!slowMode)
+    {
+        bool kingFound {false};
+        for (int ix {0}; ix < 8; ix++)
+            for (int iy {0}; iy < 8; iy++)
+                if (tiles.at(ix).at(iy).getPiece() == Piece::king_b - whoToMove)
+                    kingFound = true;
+        if (!kingFound)
+            return false;
+    }
+    #endif // DEBUG_AI_SLOW_LEGALITY_CHECK
 
     switch (pieceToMove)
     {
@@ -245,7 +257,7 @@ bool moveIsLegal(Move move, std::vector<std::vector<Tile>>& tiles, bool whoToMov
     return false;
 }
 
-std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile>> tiles, const CastlingRights& CRs, const std::vector<bool>& ePRs, bool firstRunThrough)
+std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile>> tiles, const CastlingRights& CRs, const std::vector<bool>& ePRs, bool firstRunThrough, bool slowMode)
 {
     std::vector<Move> availableMoves;
     if (whoToMove == 1)
@@ -264,7 +276,7 @@ std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile
                         for (int jy {0}; jy < 8; jy++)
                         {
 
-                            if (moveIsLegal(Move(ix + 1, iy + 1, jx + 1, jy + 1), tiles, whoToMove, CRs, ePRs, firstRunThrough))
+                            if (moveIsLegal(Move(ix + 1, iy + 1, jx + 1, jy + 1), tiles, whoToMove, CRs, ePRs, firstRunThrough, slowMode))
                                 availableMoves.push_back(Move(ix + 1, iy + 1, jx + 1, jy + 1));
                         }
                 }
@@ -286,7 +298,7 @@ std::vector<Move> getAvailableMoves(bool whoToMove, std::vector<std::vector<Tile
                         for (int jy {0}; jy < 8; jy++)
                         {
 
-                            if (moveIsLegal(Move(ix + 1, iy + 1, jx + 1, jy + 1), tiles, whoToMove, CRs, ePRs, firstRunThrough))
+                            if (moveIsLegal(Move(ix + 1, iy + 1, jx + 1, jy + 1), tiles, whoToMove, CRs, ePRs, firstRunThrough, slowMode))
                                 availableMoves.push_back(Move(ix + 1, iy + 1, jx + 1, jy + 1));
                         }
                 }

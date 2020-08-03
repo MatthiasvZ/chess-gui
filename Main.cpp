@@ -9,6 +9,7 @@
 
 #ifdef DEBUG
 #include "other/ErrorFeedback.h"
+#include <chrono>
 #endif //DEBUG
 
 #include <iostream>
@@ -202,7 +203,7 @@ int main()
             else if (tileX)
             {
                 Move move(selectedTileX, selectedTileY, tileX, tileY);
-                if (moveIsLegal(move, tiles, window.getPlayer(), CRs, ePRs))
+                if (moveIsLegal(move, tiles, window.getPlayer(), CRs, ePRs, 1, 1))
                 {
                     makeMove(move, tiles, CRs, ePRs);
                     lastMove = move;
@@ -211,14 +212,19 @@ int main()
                         goto draw;
                     window.setplayer(!window.getPlayer());
                     window.updateTitle();
+                    if (AI_ANALYSE == 1 && PLAY_AGAINST_AI == 0 && AI_VS_AI == 0)
+                        bestMove(tiles, 1, window.getPlayer(), CRs, ePRs);
                 }
                 selectedTileX = 0;
                 selectedTileY = 0;
                 window.removeSelection();
             }
         }
-        else // Have the AI play
+        else// Have the AI play
         {
+            #ifdef DEBUG
+            auto time_a = std::chrono::high_resolution_clock::now();
+            #endif // DEBUG
             Move move = bestMove(tiles, 1, window.getPlayer(), CRs, ePRs);
             makeMove(move, tiles, CRs, ePRs);
             lastMove = move;
@@ -227,6 +233,10 @@ int main()
                 goto draw;
             window.setplayer(!window.getPlayer());
             window.updateTitle();
+            #ifdef DEBUG
+            auto time_b = std::chrono::high_resolution_clock::now();
+            fprintf(stderr, "Time taken to calculate response: %lf seconds\n", static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(time_b - time_a).count()) / 1000);
+            #endif // DEBUG
         }
 
         draw:
@@ -242,8 +252,8 @@ int main()
             renderer.drawVA(vaos.at(selectedTileX - 1).at(selectedTileY - 1), ibo);
 
             shader.setUniform1i("tex", 14);
-            std::vector<Move> allMoves {getAvailableMoves(window.getPlayer(), tiles, CRs, ePRs)};
-            std::vector<Move> allEnemyMoves {getAvailableMoves(!window.getPlayer(), tiles, CRs, ePRs)};
+            std::vector<Move> allMoves {getAvailableMoves(window.getPlayer(), tiles, CRs, ePRs, 1, 1)};
+            std::vector<Move> allEnemyMoves {getAvailableMoves(!window.getPlayer(), tiles, CRs, ePRs, 1, 1)};
             allMoves.insert(allMoves.end(), allEnemyMoves.begin(), allEnemyMoves.end());
 
             for (auto move : allMoves)
