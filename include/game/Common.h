@@ -11,7 +11,7 @@
 
 #define DEBUG_AI_RANDOM 0 // makes random moves
 #define DEBUG_AI_SLOW_LEGALITY_CHECK 0
-#define DEBUG_AI_VALUE_MATERIAL_ONLY 1 // don't try to centralise pieces
+#define DEBUG_AI_VALUE_MATERIAL_ONLY 0 // don't try to centralise pieces
 #define DEBUG_USE_ALPHA_BETA_PRUNING 0
 // ONE AND ONLY ONE MUST BE SET TO 1
 #define L10N_EN_GB 1
