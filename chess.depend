@@ -1,0 +1,149 @@
+# depslib dependency file v1.0
+1596448820 source:/home/matthias/Projekte/chess/Main.cpp
+	"other/FileManagement.h"
+	"gl/Window.h"
+	"gl/Shader.h"
+	"gl/Texture.h"
+	"game/Common.h"
+	"game/Tile.h"
+	"game/Move.h"
+	"game/AI.h"
+	"other/ErrorFeedback.h"
+	<chrono>
+	<iostream>
+	<vector>
+
+1595764604 source:/home/matthias/Projekte/chess/src/gl/IndexBuffer.cpp
+	"gl/IndexBuffer.h"
+	"GL/glew.h"
+
+1595764604 source:/home/matthias/Projekte/chess/src/gl/Renderer.cpp
+	"gl/Renderer.h"
+
+1595764604 source:/home/matthias/Projekte/chess/src/gl/Shader.cpp
+	"gl/Shader.h"
+	<GL/glew.h>
+	<iostream>
+	<fstream>
+
+1595764604 source:/home/matthias/Projekte/chess/src/gl/Texture.cpp
+	"gl/Texture.h"
+	"vendor/stb_image/stb_image.h"
+
+1598025310 source:/home/matthias/Projekte/chess/src/gl/VertexArray.cpp
+	"gl/VertexArray.h"
+	<GL/glew.h>
+
+1595764604 source:/home/matthias/Projekte/chess/src/gl/VertexBuffer.cpp
+	"gl/VertexBuffer.h"
+	"GL/glew.h"
+
+1595764604 source:/home/matthias/Projekte/chess/src/gl/VertexBufferLayout.cpp
+	"gl/VertexBufferLayout.h"
+
+1596027790 source:/home/matthias/Projekte/chess/src/gl/Window.cpp
+	"gl/Window.h"
+	"gl/Input.h"
+	"gl/Renderer.h"
+	"game/Common.h"
+	<GL/glew.h>
+	<ctime>
+	<stdio.h>
+
+1595764604 source:/home/matthias/Projekte/chess/src/other/ErrorFeedback.cpp
+	"other/ErrorFeedback.h"
+	<GL/glew.h>
+	<iostream>
+
+1595830617 source:/home/matthias/Projekte/chess/src/other/FileManagement.cpp
+	"other/FileManagement.h"
+	<limits.h>
+	<unistd.h>
+	<sys/stat.h>
+
+1595764604 source:/home/matthias/Projekte/chess/src/vendor/stb_image/stb_image.cpp
+	"vendor/stb_image/stb_image.h"
+
+1595764604 /home/matthias/Projekte/chess/include/other/FileManagement.h
+	<string>
+
+1595810930 /home/matthias/Projekte/chess/include/gl/Window.h
+	<GLFW/glfw3.h>
+
+1595764604 /home/matthias/Projekte/chess/include/gl/Shader.h
+	<string>
+	<unordered_map>
+	<glm/glm.hpp>
+
+1595764604 /home/matthias/Projekte/chess/include/gl/Texture.h
+	"Renderer.h"
+
+1595764604 /home/matthias/Projekte/chess/include/gl/Renderer.h
+	<GL/glew.h>
+	"gl/VertexArray.h"
+	"gl/IndexBuffer.h"
+	"gl/Shader.h"
+
+1595764604 /home/matthias/Projekte/chess/include/gl/VertexArray.h
+	"VertexBuffer.h"
+	"VertexBufferLayout.h"
+
+1595764604 /home/matthias/Projekte/chess/include/gl/VertexBuffer.h
+
+1595764604 /home/matthias/Projekte/chess/include/gl/VertexBufferLayout.h
+	<vector>
+	"GL/glew.h"
+
+1595764604 /home/matthias/Projekte/chess/include/gl/IndexBuffer.h
+
+1595764604 /home/matthias/Projekte/chess/include/other/ErrorFeedback.h
+
+1595764604 /home/matthias/Projekte/chess/include/vendor/stb_image/stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1595764604 /home/matthias/Projekte/chess/include/gl/Input.h
+
+1595974155 /home/matthias/Projekte/chess/include/game/Tile.h
+	"game/Common.h"
+	<vector>
+
+1595818470 source:/home/matthias/Projekte/chess/src/game/Tile.cpp
+	"game/Tile.h"
+
+1598025730 /home/matthias/Projekte/chess/include/game/Common.h
+
+1596351251 /home/matthias/Projekte/chess/include/game/Move.h
+	"game/Common.h"
+	"game/Tile.h"
+	<vector>
+
+1596102135 /home/matthias/Projekte/chess/include/game/AI.h
+	"game/Tile.h"
+	"game/Common.h"
+
+1596351246 source:/home/matthias/Projekte/chess/src/game/Move.cpp
+	"game/Move.h"
+
+1598025572 source:/home/matthias/Projekte/chess/src/game/AI.cpp
+	"game/AI.h"
+	"game/Move.h"
+	<cstdio>
+	<algorithm>
+	<ctime>
+	<cmath>
+	<cassert>
+
