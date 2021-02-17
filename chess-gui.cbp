@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="chess-gui" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/chess-gui" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DDEBUG" />
+					<Add directory="include" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/chess-gui" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-std=c++20" />
+		</Compiler>
+		<Linker>
+			<Add option="external/libPetroleum.a" />
+			<Add option="-lGLEW" />
+			<Add option="-lX11" />
+			<Add option="-lGLU" />
+			<Add option="-lGL" />
+			<Add option="-lglfw" />
+		</Linker>
+		<Unit filename="include/AI.h" />
+		<Unit filename="include/Board.h" />
+		<Unit filename="include/Common.h" />
+		<Unit filename="include/Evaluation.h" />
+		<Unit filename="include/Move.h" />
+		<Unit filename="include/Piece.h" />
+		<Unit filename="include/Position.h" />
+		<Unit filename="include/Renderer.h" />
+		<Unit filename="include/Square.h" />
+		<Unit filename="include/UI.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src/AI.cpp" />
+		<Unit filename="src/Board.cpp" />
+		<Unit filename="src/Evaluation.cpp" />
+		<Unit filename="src/Move.cpp" />
+		<Unit filename="src/Piece.cpp" />
+		<Unit filename="src/Position.cpp" />
+		<Unit filename="src/Renderer.cpp" />
+		<Unit filename="src/UI.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
