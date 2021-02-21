@@ -107,7 +107,7 @@ Board::Board(std::string fen)
         }
     }
 
-    // This character show the player who's turn it is
+    // This character shows the player who's turn it is
     toMove:
     if (fen[i] == 'w')
         toMove = WHITE;

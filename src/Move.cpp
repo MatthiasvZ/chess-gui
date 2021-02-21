@@ -241,7 +241,6 @@ std::vector<Move> slowLegalMoves(const Board& board)
 
 bool checkForStalemate(const Board& board)
 {
-
     if (slowLegalMoves(board).empty())
         return true;
     return false;
@@ -339,6 +338,11 @@ void makeMove(Move move, Board& board)
 
     pieceToLandOn = pieceToMove;
     pieceToMove = Piece(NONE);
+
+    if (pieceToLandOn == PAWN_W && y2 == 7)
+        pieceToLandOn = QUEEN_W;
+    if (pieceToLandOn == PAWN_B && y2 == 0)
+        pieceToLandOn = QUEEN_B;
 
     board.toMove = !board.toMove;
 
