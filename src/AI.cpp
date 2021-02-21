@@ -3,6 +3,7 @@
 #include "Move.h"
 #include "Common.h"
 #include <cmath>
+#include <iostream>
 #include <chrono>
 
 Move bestMove(const Board& board, int depth = 1, float α = -999'999.0f, float β = 999'999.0f)
@@ -26,10 +27,12 @@ Move bestMove(const Board& board, int depth = 1, float α = -999'999.0f, float �
         newBoard.toMove = !newBoard.toMove;
 
         int d = depth;
-        while (d < 4) {
+        while (d < AI_MAX_DEPTH)
+        {
             quickMove(bestMove(newBoard, ++d), newBoard);
             newBoard.toMove = !newBoard.toMove;
         }
+
         float rating = evaluate(newBoard);
 
         if (board.toMove == WHITE)
@@ -70,7 +73,10 @@ AI::AI(Board& board, Renderer& renderer)
 
 void AI::computersTurn()
 {
+    auto t_start = std::chrono::high_resolution_clock::now();
     Move move = bestMove(board);
+    std::cout << "Time taken to calculate response = " << std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000 << std::endl;
+
     makeMove(move, board);
 
     if (kingInCheck(board))
