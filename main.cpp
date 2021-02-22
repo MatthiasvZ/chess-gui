@@ -6,6 +6,7 @@
 #include "Common.h"
 #include "Move.h"
 #include <iostream>
+#include <chrono>
 
 int main()
 {
@@ -26,6 +27,7 @@ int main()
     UI ui(board, renderer);
     AI ai(board, renderer);
 
+    auto t_start = std::chrono::high_resolution_clock::now();
     while (window.shouldRun() && board.outcome == ONGOING)
     {
         renderer.drawBoard(board);
@@ -39,6 +41,7 @@ int main()
         window.update();
         PT::doEvents();
     }
+    std::cout << "Total time = " << std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000 << std::endl;
 
     switch (board.outcome)
     {

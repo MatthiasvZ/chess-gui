@@ -55,12 +55,12 @@ Move bestMove(const Board& board, int depth = 1, float Î± = -999'999.0f, float Î
             }
         }
 
-        #ifdef DEBUG
+        #if DEBUG_AI_DISPLAY_MOVES == true
         if (depth == 1)
             fprintf(stderr, "Possible move %c%d-%c%d for %s   Expected rating change = %f (%f)\n",
                     move.pos1.x() + 97, move.pos1.y(), move.pos2.x() + 97, move.pos2.y(),
                     (board.toMove ? "black" : "white"), rating - evaluate(board), rating);
-        #endif // DEBUG
+        #endif // DEBUG_AI_DISPLAY_MOVES
     }
     return best;
 }
@@ -73,9 +73,15 @@ AI::AI(Board& board, Renderer& renderer)
 
 void AI::computersTurn()
 {
-    auto t_start = std::chrono::high_resolution_clock::now();
+    #if DEBUG_AI_DISPLAY_TIME == true
+        auto t_start = std::chrono::high_resolution_clock::now();
+    #endif // DEBUG_AI_DISPLAY_TIME
+
     Move move = bestMove(board);
-    std::cout << "Time taken to calculate response = " << std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000 << std::endl;
+
+    #if DEBUG_AI_DISPLAY_TIME == true
+        std::cout << "Time taken to calculate response = " << std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000 << std::endl;
+    #endif // DEBUG_AI_DISPLAY_TIME
 
     makeMove(move, board);
 
