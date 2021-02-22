@@ -12,33 +12,37 @@ constexpr int WIN_FOR_BLACK = -1;
 
 enum File : unsigned char
 {
-    a, b, c, d, e, f, g, h
+    none, a, b, c, d, e, f, g, h
 };
 
 class Rights
 {
     public:
         Rights()
-            : data(0) {}
+            : _k(false), _q(false), _K(false), _Q(false), enPassantFile(File::none) {}
 
         // Castling rights
-        inline void set_k(bool n) { data ^= (-n ^ data) & 0b0000'0001; }
-        inline void set_q(bool n) { data ^= (-n ^ data) & 0b0000'0010; }
-        inline void set_K(bool n) { data ^= (-n ^ data) & 0b0000'0100; }
-        inline void set_Q(bool n) { data ^= (-n ^ data) & 0b0000'1000; }
+        inline void set_k(bool n) { _k = n; }
+        inline void set_q(bool n) { _q = n; }
+        inline void set_K(bool n) { _K = n; }
+        inline void set_Q(bool n) { _Q = n; }
 
-        inline bool k() const { return (data >> 0) & 0b0000'0001; }
-        inline bool q() const { return (data >> 1) & 0b0000'0001; }
-        inline bool K() const { return (data >> 2) & 0b0000'0001; }
-        inline bool Q() const { return (data >> 3) & 0b0000'0001; }
+        inline bool k() const { return _k; }
+        inline bool q() const { return _q; }
+        inline bool K() const { return _K; }
+        inline bool Q() const { return _Q; }
 
         // En-passant rights
-        inline void set_enPassant(File file) { data |= (file << 4); }
-        inline void clear_enPassant() { data &= 0b0000'1111; }
-        inline File enPassant() const { return static_cast<File>(data >> 4); }
+        inline void set_enPassant(File file) { enPassantFile = file; }
+        inline void clear_enPassant() { enPassantFile = File::none; }
+        inline File enPassant() const { return enPassantFile; }
 
     private:
-        unsigned char data;
+        bool _k;
+        bool _q;
+        bool _K;
+        bool _Q;
+        File enPassantFile;
 };
 
 class Board

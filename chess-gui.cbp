@@ -35,6 +35,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add option="-std=c++20" />
+			<Add option="-fopenmp" />
 		</Compiler>
 		<Linker>
 			<Add option="external/libPetroleum.a" />
@@ -43,12 +44,14 @@
 			<Add option="-lGLU" />
 			<Add option="-lGL" />
 			<Add option="-lglfw" />
+			<Add option="-fopenmp" />
 		</Linker>
 		<Unit filename="include/AI.h" />
 		<Unit filename="include/Board.h" />
 		<Unit filename="include/Common.h" />
 		<Unit filename="include/Evaluation.h" />
 		<Unit filename="include/Move.h" />
+		<Unit filename="include/PGN.h" />
 		<Unit filename="include/Piece.h" />
 		<Unit filename="include/Position.h" />
 		<Unit filename="include/Renderer.h" />
@@ -59,6 +62,7 @@
 		<Unit filename="src/Board.cpp" />
 		<Unit filename="src/Evaluation.cpp" />
 		<Unit filename="src/Move.cpp" />
+		<Unit filename="src/PGN.cpp" />
 		<Unit filename="src/Piece.cpp" />
 		<Unit filename="src/Position.cpp" />
 		<Unit filename="src/Renderer.cpp" />

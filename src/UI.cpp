@@ -1,6 +1,7 @@
 #include "UI.h"
 
 #include "Move.h"
+#include "PGN.h"
 
 
 UI::UI(Board& board, Renderer& renderer)
@@ -46,6 +47,7 @@ void UI::playersTurn(PT::Window& window)
             if (move.pos1 == Position(sTileX - 1, sTileY - 1))
             {
                 Board tempBoard(board);
+                docMove(move, board);
                 makeMove(move, tempBoard);
                 tempBoard.toMove = !tempBoard.toMove;
 

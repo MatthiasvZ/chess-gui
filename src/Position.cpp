@@ -1,7 +1,7 @@
 #include "Position.h"
 
 Position::Position(unsigned char x, unsigned char y)
-    : data(x + (y << 4))
+    : data(y + (x << 3))
 {
 
 }

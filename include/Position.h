@@ -6,12 +6,11 @@ class Position
 {
     public:
         Position(unsigned char x, unsigned char y);
-        inline unsigned char x() { return data % 8; }
-        inline unsigned char y() { return data >> 4; }
-        inline unsigned char d() { return 8*x() + y(); }
-        inline unsigned char b() { return data; }
+        inline unsigned char x() const { return data >> 3; }
+        inline unsigned char y() const { return data & 0b0000'0111; }
+        inline unsigned char d() const { return data; }
 
-        inline bool operator==(Position b) { return this->data == b.b(); }
+        inline bool operator==(Position b) { return this->data == b.d(); }
 
     protected:
 

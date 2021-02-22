@@ -9,6 +9,7 @@ struct Move
 {
     Position pos1;
     Position pos2;
+    bool empty = false;
 };
 
 bool moveIsLegal(Move move, const Board& board);
