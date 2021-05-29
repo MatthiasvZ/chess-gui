@@ -12,7 +12,7 @@ UI::UI(Board& board, Renderer& renderer)
 
 void UI::playersTurn(PT::Window& window)
 {
-    if (window.getInputs()->mouse1 && !mouseHeld)
+    if (window.getMouseButton(GLFW_MOUSE_BUTTON_1) && !mouseHeld)
     {
         double posX, posY;
         int wWidth, wHeight;
@@ -30,7 +30,7 @@ void UI::playersTurn(PT::Window& window)
 
         mouseHeld = true;
     }
-    else if (!window.getInputs()->mouse1)
+    else if (!window.getMouseButton(GLFW_MOUSE_BUTTON_1))
         mouseHeld = false;
 
     if (!sTileX && tileX)

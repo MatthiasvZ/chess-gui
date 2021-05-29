@@ -38,7 +38,7 @@
 			<Add option="-fopenmp" />
 		</Compiler>
 		<Linker>
-			<Add option="external/libPetroleum.a" />
+			<Add option="lib/libPetroleum.a" />
 			<Add option="-lGLEW" />
 			<Add option="-lX11" />
 			<Add option="-lGLU" />
@@ -67,9 +67,6 @@
 		<Unit filename="src/Position.cpp" />
 		<Unit filename="src/Renderer.cpp" />
 		<Unit filename="src/UI.cpp" />
-		<Extensions>
-			<code_completion />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

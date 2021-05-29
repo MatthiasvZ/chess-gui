@@ -101,10 +101,10 @@ void Renderer::drawBoard(const Board& board)
 {
     PT::clearScreen();
 
-    shader.setUniform1i("texSlot", 0);
+    shader.setTexSlot(0);
     PT::drawVA(boardVao, ibo, shader);
 
-    shader.setUniform1i("texSlot", 14);
+    shader.setTexSlot(14);
     for (auto move : previewMoves)
     {
         PT::drawVA(squareVaos[move.pos2.x()][move.pos2.y()], ibo, shader);
@@ -112,14 +112,14 @@ void Renderer::drawBoard(const Board& board)
 
     if (!noLastMove)
     {
-        shader.setUniform1i("texSlot", 16);
+        shader.setTexSlot(16);
         PT::drawVA(squareVaos[lastMove.pos1.x()][lastMove.pos1.y()], ibo, shader);
         PT::drawVA(squareVaos[lastMove.pos2.x()][lastMove.pos2.y()], ibo, shader);
     }
 
     if (!noSelection)
     {
-        shader.setUniform1i("texSlot", 13);
+        shader.setTexSlot(13);
         PT::drawVA(squareVaos[selectedPiece.x()][selectedPiece.y()], ibo, shader);
     }
 
@@ -142,13 +142,13 @@ void Renderer::drawBoard(const Board& board)
             texSlot += 11 * piece.isKing();
 
 
-            shader.setUniform1i("texSlot", texSlot);
+            shader.setTexSlot(texSlot);
             PT::drawVA(squareVaos[x][y], ibo, shader);
 
             if (inCheck)
                 if (piece.isKing() && piece.color() == board.toMove)
                 {
-                    shader.setUniform1i("texSlot", 15);
+                    shader.setTexSlot(15);
                     PT::drawVA(squareVaos[x][y], ibo, shader);
                 }
         }

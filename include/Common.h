@@ -3,7 +3,7 @@
 
 #include "Piece.h"
 
-#define VERSION "0.2.1.0"
+#define VERSION "0.2.1.1"
 
 #define PLAY_AS WHITE
 #define PLAY_AGAINST_AI true

@@ -42,7 +42,7 @@ int main()
         window.update();
         PT::doEvents();
     }
-    std::cout << "Total time = " << std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count()*1000 << std::endl;
+    std::cout << "Total time = " << std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::high_resolution_clock::now() - t_start).count() * 1000 << std::endl;
     #if RECORD_PGN == true
         std::cout << pgn << std::endl;
     #endif // RECORD_PGN

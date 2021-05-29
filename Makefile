@@ -12,11 +12,11 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wall -fexceptions -std=c++20
+CFLAGS = -Wall -fexceptions -std=c++20 -fopenmp
 RESINC = 
 LIBDIR = 
 LIB = 
-LDFLAGS = external/libPetroleum.a -lGLEW -lX11 -lGLU -lGL -lglfw
+LDFLAGS = lib/libPetroleum.a -lGLEW -lX11 -lGLU -lGL -lglfw -fopenmp
 
 INC_DEBUG = $(INC) -Iinclude
 CFLAGS_DEBUG = $(CFLAGS) -g -DDEBUG
@@ -30,7 +30,7 @@ DEP_DEBUG =
 OUT_DEBUG = bin/Debug/chess-gui
 
 INC_RELEASE = $(INC) -Iinclude
-CFLAGS_RELEASE = $(CFLAGS) -O2
+CFLAGS_RELEASE = $(CFLAGS) -Ofast
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
 LIBDIR_RELEASE = $(LIBDIR)
@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/chess-gui
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/src/UI.o $(OBJDIR_DEBUG)/src/Renderer.o $(OBJDIR_DEBUG)/src/Position.o $(OBJDIR_DEBUG)/src/Piece.o $(OBJDIR_DEBUG)/src/Move.o $(OBJDIR_DEBUG)/src/Evaluation.o $(OBJDIR_DEBUG)/src/Board.o $(OBJDIR_DEBUG)/src/AI.o $(OBJDIR_DEBUG)/main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/src/UI.o $(OBJDIR_DEBUG)/src/Renderer.o $(OBJDIR_DEBUG)/src/Position.o $(OBJDIR_DEBUG)/src/Piece.o $(OBJDIR_DEBUG)/src/PGN.o $(OBJDIR_DEBUG)/src/Move.o $(OBJDIR_DEBUG)/src/Evaluation.o $(OBJDIR_DEBUG)/src/Board.o $(OBJDIR_DEBUG)/src/AI.o $(OBJDIR_DEBUG)/main.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/src/UI.o $(OBJDIR_RELEASE)/src/Renderer.o $(OBJDIR_RELEASE)/src/Position.o $(OBJDIR_RELEASE)/src/Piece.o $(OBJDIR_RELEASE)/src/Move.o $(OBJDIR_RELEASE)/src/Evaluation.o $(OBJDIR_RELEASE)/src/Board.o $(OBJDIR_RELEASE)/src/AI.o $(OBJDIR_RELEASE)/main.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/src/UI.o $(OBJDIR_RELEASE)/src/Renderer.o $(OBJDIR_RELEASE)/src/Position.o $(OBJDIR_RELEASE)/src/Piece.o $(OBJDIR_RELEASE)/src/PGN.o $(OBJDIR_RELEASE)/src/Move.o $(OBJDIR_RELEASE)/src/Evaluation.o $(OBJDIR_RELEASE)/src/Board.o $(OBJDIR_RELEASE)/src/AI.o $(OBJDIR_RELEASE)/main.o
 
 all: debug release
 
@@ -71,6 +71,9 @@ $(OBJDIR_DEBUG)/src/Position.o: src/Position.cpp
 
 $(OBJDIR_DEBUG)/src/Piece.o: src/Piece.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Piece.cpp -o $(OBJDIR_DEBUG)/src/Piece.o
+
+$(OBJDIR_DEBUG)/src/PGN.o: src/PGN.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/PGN.cpp -o $(OBJDIR_DEBUG)/src/PGN.o
 
 $(OBJDIR_DEBUG)/src/Move.o: src/Move.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Move.cpp -o $(OBJDIR_DEBUG)/src/Move.o
@@ -116,6 +119,9 @@ $(OBJDIR_RELEASE)/src/Position.o: src/Position.cpp
 
 $(OBJDIR_RELEASE)/src/Piece.o: src/Piece.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Piece.cpp -o $(OBJDIR_RELEASE)/src/Piece.o
+
+$(OBJDIR_RELEASE)/src/PGN.o: src/PGN.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/PGN.cpp -o $(OBJDIR_RELEASE)/src/PGN.o
 
 $(OBJDIR_RELEASE)/src/Move.o: src/Move.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Move.cpp -o $(OBJDIR_RELEASE)/src/Move.o

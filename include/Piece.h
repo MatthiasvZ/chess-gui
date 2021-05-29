@@ -23,7 +23,7 @@ class Piece
     public:
         Piece(signed char piece);
 
-        inline bool color()    const { return data < 0; }
+        inline bool color()    const { return data & 0b1000'0000; }
         inline bool isEmpty()  const { return !data; }
         inline bool isPawn()   const { return data & 0b0000'0001; }
         inline bool isKnight() const { return data & 0b0000'0010; }
